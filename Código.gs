@@ -1,6 +1,6 @@
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('teste-bootstrap-gas3')
+    .setTitle('Bob Esponja — Fenda do Biquíni')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 

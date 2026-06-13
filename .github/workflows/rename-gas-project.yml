@@ -24,15 +24,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # O commit que REMOVE o .trigger-rename também casa com o filtro de
+      # paths e dispararia uma segunda execução fadada a falhar — este guard
+      # pula a execução quando o arquivo não existe mais.
+      - name: Verificar trigger
+        id: check
+        run: |
+          if [ -f .trigger-rename ]; then
+            echo "skip=false" >> $GITHUB_OUTPUT
+          else
+            echo "Arquivo .trigger-rename ausente (commit de limpeza). Pulando."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Node.js
+        if: steps.check.outputs.skip == 'false'
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
       - name: Write clasp credentials
+        if: steps.check.outputs.skip == 'false'
         run: echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
 
       - name: Renomear planilha via Sheets API
+        if: steps.check.outputs.skip == 'false'
         run: |
           CLIENT_ID=$(node -e "console.log(require(process.env.HOME+'/.clasprc.json').oauth2ClientSettings.clientId)")
           CLIENT_SECRET=$(node -e "console.log(require(process.env.HOME+'/.clasprc.json').oauth2ClientSettings.clientSecret)")
@@ -67,6 +83,7 @@ jobs:
       # também dispara o deploy, que commita .webapp-urls de volta — sem o
       # rebase um dos dois pushes falha com "remote contains work you do not have"
       - name: Remover arquivo de trigger
+        if: steps.check.outputs.skip == 'false'
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"

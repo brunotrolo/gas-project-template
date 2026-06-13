@@ -1,184 +1,962 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bob Esponja está online!</title>
+  <title>Bob Esponja — Fenda do Biquíni</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
 
     body {
-      min-height: 100vh;
-      background: linear-gradient(180deg,
-        #020e1f 0%, #0a2744 30%, #0d4a7a 60%,
-        #1a6b8a 74%, #c8a96e 74%, #d4b483 100%);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
       font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
-      padding: 20px; text-align: center; overflow: hidden;
+      background: linear-gradient(180deg,
+        #03203f 0%, #0a4a7c 26%, #1173ad 48%,
+        #2a9cc9 66%, #51c2dd 78%, #7fd8e8 86%);
       position: relative;
     }
 
-    /* ── Algas ─────────────────────────────────────────────── */
-    .seaweed {
-      position: fixed; bottom: 0;
-      background: linear-gradient(180deg, #2d8a4e, #1a5e33);
-      border-radius: 50% 50% 0 0;
-      animation: sway 3s ease-in-out infinite alternate;
+    /* ════════ Raios de luz ════════ */
+    .ray {
+      position: fixed; top: -12vh; width: 14vw; height: 70vh;
+      background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0));
+      transform-origin: top center;
+      animation: raysway 9s ease-in-out infinite alternate;
+      pointer-events: none; filter: blur(6px); z-index: 1;
+    }
+    .ray.r1 { left: 12%; transform: rotate(14deg); animation-delay: 0s; }
+    .ray.r2 { left: 38%; transform: rotate(-6deg); animation-delay: 2.5s; width: 20vw; }
+    .ray.r3 { left: 68%; transform: rotate(10deg); animation-delay: 1.2s; }
+    @keyframes raysway {
+      from { opacity: .35; transform: rotate(8deg); }
+      to   { opacity: .14; transform: rotate(-8deg); }
+    }
+
+    /* ════════ Nuvens-flor (as flores do céu do desenho!) ════════ */
+    .flower { position: fixed; pointer-events: none; z-index: 2; animation: drift linear infinite; opacity: .9; }
+    .flower .c {
+      position: absolute; border-radius: 50%;
+      width: 46px; height: 46px; background: var(--fc, #6fd3e3);
+    }
+    .flower .c:nth-child(1) { left: 22px; top: -16px; }
+    .flower .c:nth-child(2) { left: 46px; top: 2px; width: 40px; height: 40px; }
+    .flower .c:nth-child(3) { left: 30px; top: 20px; width: 44px; height: 44px; }
+    .flower .c:nth-child(4) { left: 2px;  top: 16px; width: 38px; height: 38px; }
+    .flower .c:nth-child(5) { left: -10px; top: -4px; width: 40px; height: 40px; }
+    .flower .c:nth-child(6) { left: 16px; top: 0px; width: 52px; height: 52px; filter: brightness(1.12); }
+    @keyframes drift {
+      from { transform: translateX(-160px) scale(var(--fs,1)); }
+      to   { transform: translateX(110vw) scale(var(--fs,1)); }
+    }
+    .flower.f1 { top: 6%;  --fc: #79e0c9; --fs: 1;   animation-duration: 70s; }
+    .flower.f2 { top: 13%; --fc: #f3a6c8; --fs: .7;  animation-duration: 95s;  animation-delay: -30s; }
+    .flower.f3 { top: 3%;  --fc: #b9a6f3; --fs: .85; animation-duration: 110s; animation-delay: -60s; }
+    .flower.f4 { top: 17%; --fc: #a6e07b; --fs: .55; animation-duration: 80s;  animation-delay: -15s; }
+    .flower.f5 { top: 9%;  --fc: #ffd36b; --fs: .65; animation-duration: 120s; animation-delay: -85s; }
+
+    /* ════════ Mundo (cenário escalável) ════════ */
+    #world {
+      position: fixed; left: 50%; bottom: 0;
+      width: 1280px; height: 640px;
+      transform: translateX(-50%) scale(var(--s, 1));
+      transform-origin: bottom center;
+      z-index: 3;
+    }
+    .plx { position: absolute; inset: 0; will-change: transform; }
+
+    /* ── Areia ── */
+    .sand {
+      position: absolute; left: -20%; right: -20%; bottom: 0; height: 120px;
+      background:
+        radial-gradient(140% 110% at 18% 0%, #f0cf8d 0 38%, transparent 39%),
+        radial-gradient(150% 130% at 75% 0%, #ecc77f 0 42%, transparent 43%),
+        linear-gradient(180deg, #e8c178, #d9a95e);
+      border-radius: 50% 50% 0 0 / 28px 28px 0 0;
+      box-shadow: 0 -6px 24px rgba(0,0,0,.12);
+    }
+    .sand::after {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 12% 40%, rgba(140,100,40,.35) 0 2px, transparent 3px),
+        radial-gradient(circle at 32% 70%, rgba(140,100,40,.3) 0 2px, transparent 3px),
+        radial-gradient(circle at 56% 45%, rgba(140,100,40,.3) 0 2px, transparent 3px),
+        radial-gradient(circle at 78% 65%, rgba(140,100,40,.35) 0 2px, transparent 3px),
+        radial-gradient(circle at 92% 38%, rgba(140,100,40,.3) 0 2px, transparent 3px);
+      background-size: 220px 90px;
+    }
+
+    /* ── Corais distantes ── */
+    .coral { position: absolute; bottom: 96px; opacity: .55; }
+    .coral .stem { position: absolute; bottom: 0; border-radius: 12px 12px 0 0; }
+    .coral.c1 { left: 2%; }
+    .coral.c1 .stem:nth-child(1) { left: 0;  width: 14px; height: 80px;  background: #c95f8e; transform: rotate(-8deg); }
+    .coral.c1 .stem:nth-child(2) { left: 14px; width: 12px; height: 110px; background: #d4719c; }
+    .coral.c1 .stem:nth-child(3) { left: 28px; width: 13px; height: 66px;  background: #b9537f; transform: rotate(9deg); }
+    .coral.c2 { left: 55%; }
+    .coral.c2 .stem:nth-child(1) { left: 0;  width: 12px; height: 70px; background: #7b68c9; transform: rotate(-10deg); }
+    .coral.c2 .stem:nth-child(2) { left: 13px; width: 14px; height: 95px; background: #8d7ad6; }
+    .coral.c2 .stem:nth-child(3) { left: 29px; width: 11px; height: 58px; background: #6a57b8; transform: rotate(11deg); }
+    .coral.c3 { left: 96%; }
+    .coral.c3 .stem:nth-child(1) { left: 0; width: 13px; height: 88px; background: #d98a4e; transform: rotate(-7deg); }
+    .coral.c3 .stem:nth-child(2) { left: 14px; width: 12px; height: 64px; background: #c97a3e; transform: rotate(8deg); }
+    .coral.c3 .stem:nth-child(3) { left: 26px; width: 14px; height: 100px; background: #e09a5e; }
+
+    /* ── Algas ── */
+    .weed {
+      position: absolute; bottom: 70px;
+      background: linear-gradient(180deg, #2fa05a, #1a6e3a);
+      border-radius: 50% 50% 6px 6px;
+      transform-origin: bottom center;
+      animation: sway 3.4s ease-in-out infinite alternate;
+    }
+    @keyframes sway { from { transform: rotate(-11deg); } to { transform: rotate(11deg); } }
+    .weed.w1 { left: 3%;  width: 16px; height: 95px; }
+    .weed.w2 { left: 18%; width: 11px; height: 60px; animation-delay: .6s; }
+    .weed.w3 { left: 43%; width: 13px; height: 72px; animation-delay: 1.1s; }
+    .weed.w4 { left: 59%; width: 10px; height: 52px; animation-delay: .3s; }
+    .weed.w5 { left: 79%; width: 15px; height: 86px; animation-delay: .9s; }
+    .weed.w6 { left: 97%; width: 12px; height: 64px; animation-delay: 1.4s; }
+
+    /* ════════ CASAS ════════ */
+    .house { position: absolute; cursor: pointer; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+    .house:hover { transform: translateY(-8px) scale(1.03); }
+
+    /* — Abacaxi do Bob — */
+    .pineapple { left: 60px; bottom: 92px; width: 165px; height: 230px; }
+    .pine-body {
+      position: absolute; bottom: 0; width: 165px; height: 195px;
+      background:
+        repeating-linear-gradient(55deg,  rgba(140,70,0,.22) 0 3px, transparent 3px 26px),
+        repeating-linear-gradient(-55deg, rgba(140,70,0,.22) 0 3px, transparent 3px 26px),
+        linear-gradient(180deg, #ffa726, #f57f17);
+      border-radius: 50% 50% 42% 42% / 58% 58% 30% 30%;
+      box-shadow: inset -14px -10px 30px rgba(150,60,0,.35), 0 10px 18px rgba(0,0,0,.2);
+    }
+    .pine-leaf {
+      position: absolute; bottom: 178px; width: 26px; height: 78px;
+      background: linear-gradient(180deg, #66bb6a, #2e7d32);
+      clip-path: polygon(50% 0%, 95% 100%, 5% 100%);
       transform-origin: bottom center;
     }
-    .seaweed:nth-child(1){left:2%;width:18px;height:90px;animation-delay:0s}
-    .seaweed:nth-child(2){left:5%;width:12px;height:55px;animation-delay:.5s}
-    .seaweed:nth-child(3){left:88%;width:20px;height:100px;animation-delay:.3s}
-    .seaweed:nth-child(4){left:93%;width:14px;height:65px;animation-delay:.8s}
-    .seaweed:nth-child(5){left:20%;width:10px;height:45px;animation-delay:1s}
-    .seaweed:nth-child(6){left:75%;width:16px;height:70px;animation-delay:.6s}
-    @keyframes sway {
-      from { transform: rotate(-14deg); }
-      to   { transform: rotate(14deg); }
+    .pine-leaf.l1 { left: 70px; height: 92px; }
+    .pine-leaf.l2 { left: 46px; transform: rotate(-26deg); }
+    .pine-leaf.l3 { left: 94px; transform: rotate(26deg); }
+    .pine-leaf.l4 { left: 26px; height: 58px; transform: rotate(-48deg); }
+    .pine-leaf.l5 { left: 112px; height: 58px; transform: rotate(48deg); }
+    .pine-door {
+      position: absolute; bottom: 0; left: 62px; width: 42px; height: 64px;
+      background: #135b76; border-radius: 22px 22px 0 0;
+      border: 4px solid #8d5524; border-bottom: none;
+    }
+    .pine-win {
+      position: absolute; width: 34px; height: 34px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #9fe3f7, #1c7da0);
+      border: 4px solid #8d5524;
+    }
+    .pine-win.a { left: 28px; bottom: 110px; }
+    .pine-win.b { left: 102px; bottom: 92px; width: 28px; height: 28px; }
+
+    /* — Moai do Lula Molusco — */
+    .moai { left: 300px; bottom: 92px; width: 112px; height: 205px; }
+    .moai-head {
+      position: absolute; bottom: 0; width: 112px; height: 200px;
+      background: linear-gradient(180deg, #8fa3b8, #5f7287);
+      border-radius: 44px 44px 14px 14px;
+      box-shadow: inset -12px -8px 26px rgba(20,30,50,.35), 0 10px 16px rgba(0,0,0,.2);
+    }
+    .moai-brow { position: absolute; top: 34px; left: 14px; width: 84px; height: 14px; background: #46586c; border-radius: 8px; }
+    .moai-nose { position: absolute; top: 44px; left: 42px; width: 28px; height: 64px; background: #6e8092; border-radius: 12px 12px 16px 16px; box-shadow: inset -5px -4px 8px rgba(20,30,50,.3); }
+    .moai-eye { position: absolute; top: 52px; width: 22px; height: 16px; background: #2c3a4a; border-radius: 50%; }
+    .moai-eye.a { left: 16px; } .moai-eye.b { right: 16px; }
+    .moai-ear { position: absolute; top: 60px; width: 14px; height: 52px; background: #54657a; border-radius: 8px; }
+    .moai-ear.a { left: -8px; } .moai-ear.b { right: -8px; }
+    .moai-mouth { position: absolute; top: 128px; left: 34px; width: 44px; height: 12px; background: #2c3a4a; border-radius: 8px; }
+    .moai-door { position: absolute; bottom: 0; left: 38px; width: 36px; height: 50px; background: #1d2a38; border-radius: 18px 18px 0 0; }
+
+    /* — Pedra do Patrick — */
+    .rock { left: 480px; bottom: 92px; width: 130px; height: 64px; }
+    .rock-body {
+      position: absolute; bottom: 0; width: 130px; height: 62px;
+      background: radial-gradient(120% 150% at 35% 0%, #9c6b3c, #6e4422);
+      border-radius: 65px 65px 8px 8px;
+      box-shadow: inset -10px -8px 18px rgba(40,20,5,.4), 0 8px 14px rgba(0,0,0,.2);
+    }
+    .rock-ant { position: absolute; top: -22px; left: 60px; width: 4px; height: 26px; background: #caa05a; border-radius: 4px; }
+    .rock-ant::after { content: ''; position: absolute; top: -8px; left: -4px; width: 12px; height: 12px; border-radius: 50%; background: #ffd54f; }
+
+    /* — Siri Cascudo — */
+    .krusty { left: 880px; bottom: 92px; width: 215px; height: 215px; }
+    .kk-roof {
+      position: absolute; bottom: 130px; left: 6px; width: 200px; height: 60px;
+      background: linear-gradient(180deg, #4db6ac, #00897b);
+      clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+      box-shadow: inset 0 -8px 14px rgba(0,60,50,.35);
+    }
+    .kk-mast { position: absolute; bottom: 188px; left: 102px; width: 6px; height: 30px; background: #6d4c41; }
+    .kk-flag { position: absolute; bottom: 204px; left: 108px; width: 30px; height: 14px; background: #ef5350; clip-path: polygon(0 0, 100% 50%, 0 100%); animation: flagwave 1.6s ease-in-out infinite alternate; transform-origin: left center; }
+    @keyframes flagwave { from { transform: skewY(-6deg);} to { transform: skewY(6deg);} }
+    .kk-hull {
+      position: absolute; bottom: 0; width: 215px; height: 132px;
+      background:
+        repeating-linear-gradient(90deg, rgba(60,30,10,.25) 0 4px, transparent 4px 30px),
+        linear-gradient(180deg, #a05a2c, #7a4019);
+      border-radius: 18px 18px 10px 10px;
+      box-shadow: inset -12px -10px 26px rgba(40,15,0,.35), 0 10px 16px rgba(0,0,0,.22);
+    }
+    .kk-sign {
+      position: absolute; bottom: 142px; left: 38px; width: 138px; height: 44px;
+      background: #ffca28; border: 4px solid #8d5524; border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Luckiest Guy', 'Comic Sans MS', cursive;
+      font-size: 17px; color: #c62828; letter-spacing: 1px;
+      text-shadow: 1px 1px 0 #fff; transform: rotate(-2deg); z-index: 2;
+    }
+    .kk-door { position: absolute; bottom: 0; left: 84px; width: 48px; height: 66px; background: radial-gradient(circle at 35% 30%, #b3e5fc, #4f8cb0); border: 4px solid #5d3414; border-bottom: none; border-radius: 10px 10px 0 0; }
+    .kk-win { position: absolute; bottom: 70px; width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #b3e5fc, #4f8cb0); border: 4px solid #5d3414; }
+    .kk-win.a { left: 24px; } .kk-win.b { right: 24px; }
+
+    /* — Balde de Lixo — */
+    .chum { left: 1160px; bottom: 92px; width: 105px; height: 150px; }
+    .chum-bucket {
+      position: absolute; bottom: 0; width: 105px; height: 105px;
+      background: linear-gradient(180deg, #b0bec5, #78909c);
+      clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+      box-shadow: inset -10px -8px 20px rgba(30,40,50,.4);
+    }
+    .chum-handle { position: absolute; bottom: 96px; left: 12px; width: 81px; height: 40px; border: 7px solid #90a4ae; border-bottom: none; border-radius: 44px 44px 0 0; }
+    .chum-glove { position: absolute; bottom: 128px; left: 38px; font-size: 26px; transform: rotate(-12deg); }
+    .chum-label {
+      position: absolute; bottom: 46px; left: 10px; width: 85px;
+      text-align: center; font-size: 11px; font-weight: bold; color: #263238;
+      background: #eceff1; border-radius: 8px; padding: 3px 0; transform: rotate(1deg);
+    }
+    .chum-door { position: absolute; bottom: 0; left: 36px; width: 32px; height: 42px; background: #37474f; border-radius: 14px 14px 0 0; }
+
+    /* ════════ PERSONAGENS ════════ */
+    .char { position: absolute; bottom: 64px; cursor: pointer; transition: transform .28s cubic-bezier(.34,1.56,.64,1); z-index: 6; will-change: transform; }
+    .char:hover { transform: translateY(-12px); }
+    .pupil { position: absolute; border-radius: 50%; background: #111; transition: background .2s; }
+
+    /* — BOB ESPONJA — */
+    .bob { left: 175px; width: 140px; height: 185px; animation: idlebob 2.6s ease-in-out infinite alternate; }
+    @keyframes idlebob { from { margin-bottom: 0; } to { margin-bottom: 10px; } }
+    .bob:hover { transform: translateY(-14px) rotate(-4deg); }
+    .bob.flip { animation: bobflip .9s ease; }
+    @keyframes bobflip {
+      0% { transform: translateY(0) rotate(0); }
+      45% { transform: translateY(-70px) rotate(190deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+    .bob-body {
+      position: absolute; top: 0; left: 10px; width: 120px; height: 128px;
+      background:
+        radial-gradient(circle at 16% 22%, #d9c225 0 8px, transparent 9px),
+        radial-gradient(circle at 82% 16%, #d9c225 0 6px, transparent 7px),
+        radial-gradient(circle at 8% 70%, #d9c225 0 7px, transparent 8px),
+        radial-gradient(circle at 92% 62%, #d9c225 0 8px, transparent 9px),
+        radial-gradient(circle at 50% 6%, #d9c225 0 5px, transparent 6px),
+        linear-gradient(160deg, #fff176, #ffeb3b 55%, #fbc02d);
+      border: 3px solid #b8860b;
+      border-radius: 22% 18% 20% 24% / 20% 24% 18% 22%;
+      box-shadow: 0 8px 14px rgba(0,0,0,.18);
+    }
+    .bob-eye {
+      position: absolute; top: 26px; width: 42px; height: 42px;
+      background: #fff; border: 2px solid #9e9d24; border-radius: 50%;
+    }
+    .bob-eye.a { left: 14px; } .bob-eye.b { left: 60px; }
+    .bob-iris { position: absolute; top: 12px; left: 12px; width: 18px; height: 18px; border-radius: 50%; background: #42a5f5; }
+    .bob .pupil { top: 5px; left: 5px; width: 8px; height: 8px; }
+    .bob-lash { position: absolute; top: -8px; left: 18px; width: 3px; height: 9px; background: #333; border-radius: 2px; box-shadow: -10px 2px 0 #333, 10px 2px 0 #333; }
+    .bob-nose {
+      position: absolute; top: 58px; left: 53px; width: 13px; height: 30px;
+      background: linear-gradient(180deg, #ffee58, #f9a825);
+      border: 2px solid #b8860b; border-radius: 40% 40% 50% 50%;
+    }
+    .bob-cheek { position: absolute; top: 74px; width: 8px; height: 8px; border-radius: 50%; background: #f48fb1; }
+    .bob-cheek.a { left: 12px; } .bob-cheek.b { right: 12px; }
+    .bob-cheek::after { content: ''; position: absolute; top: -3px; left: 10px; width: 3px; height: 3px; border-radius: 50%; background: #8d6e63; box-shadow: 3px 6px 0 #8d6e63, -2px 8px 0 #8d6e63; }
+    .bob-smile {
+      position: absolute; top: 76px; left: 28px; width: 64px; height: 34px;
+      border: 4px solid #7a3b00; border-top: none;
+      border-radius: 0 0 64px 64px / 0 0 40px 40px;
+    }
+    .bob-teeth { position: absolute; top: 100px; left: 47px; width: 26px; height: 16px; display: flex; gap: 2px; }
+    .bob-teeth span { flex: 1; background: #fff; border: 2px solid #cfd8dc; border-top: none; border-radius: 0 0 4px 4px; }
+    .bob-pants { position: absolute; top: 128px; left: 10px; width: 120px; height: 30px; background: linear-gradient(180deg, #fff 0 10px, #795548 10px); border: 3px solid #4e342e; border-top: none; border-radius: 0 0 8px 8px; }
+    .bob-tie { position: absolute; top: 130px; left: 60px; width: 18px; height: 22px; background: #e53935; clip-path: polygon(50% 0, 100% 30%, 50% 100%, 0 30%); z-index: 2; }
+    .bob-leg { position: absolute; top: 158px; width: 9px; height: 20px; background: #ffeb3b; border: 2px solid #b8860b; }
+    .bob-leg.a { left: 44px; } .bob-leg.b { left: 84px; }
+    .bob-shoe { position: absolute; top: 176px; width: 26px; height: 11px; background: #212121; border-radius: 8px 10px 2px 2px; }
+    .bob-shoe.a { left: 36px; } .bob-shoe.b { left: 76px; }
+    .bob-arm { position: absolute; top: 96px; width: 8px; height: 42px; background: #ffeb3b; border: 2px solid #b8860b; border-radius: 6px; }
+    .bob-arm.a { left: -2px; transform: rotate(24deg); }
+    .bob-arm.b { right: -2px; transform: rotate(-24deg); }
+
+    /* — GARY — */
+    .gary { left: 330px; bottom: 66px; width: 78px; height: 64px; }
+    .gary:hover { transform: translateY(-6px) rotate(-5deg); }
+    .gary-shell {
+      position: absolute; top: 0; right: 0; width: 46px; height: 46px; border-radius: 50%;
+      background: repeating-radial-gradient(circle at 56% 48%, #f8bbd0 0 5px, #ec407a 5px 11px);
+      border: 3px solid #ad1457; box-shadow: 0 5px 8px rgba(0,0,0,.2);
+    }
+    .gary-body { position: absolute; bottom: 0; left: 0; width: 64px; height: 22px; background: linear-gradient(180deg, #81d4fa, #4fa8d8); border-radius: 14px 8px 6px 6px; }
+    .gary-stalk { position: absolute; bottom: 18px; width: 4px; height: 26px; background: #4fa8d8; border-radius: 4px; transform-origin: bottom center; }
+    .gary-stalk.a { left: 8px; transform: rotate(-10deg); }
+    .gary-stalk.b { left: 20px; transform: rotate(8deg); }
+    .gary-eye { position: absolute; top: -13px; left: -5px; width: 14px; height: 14px; background: #fff; border: 2px solid #4fa8d8; border-radius: 50%; }
+    .gary .pupil { top: 3px; left: 3px; width: 5px; height: 5px; background: #c62828; }
+
+    /* — LULA MOLUSCO — */
+    .squid { left: 440px; width: 96px; height: 196px; }
+    .squid:hover { transform: translateY(-8px) rotate(2deg); }
+    .squid:hover .squid-head { transform: rotate(-4deg); }
+    .squid-head {
+      position: absolute; top: 0; left: 18px; width: 60px; height: 74px;
+      background: linear-gradient(160deg, #b2dfdb, #80cbc4);
+      border-radius: 48% 48% 42% 42%; border: 2px solid #4f9a94;
+      transition: transform .3s; z-index: 2;
+    }
+    .squid-eye { position: absolute; top: 20px; width: 25px; height: 19px; background: #fdf6e3; border: 2px solid #4f9a94; border-radius: 50%; overflow: hidden; }
+    .squid-eye.a { left: 2px; } .squid-eye.b { right: 2px; }
+    .squid-eye::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; height: 9px; background: #80cbc4; border-bottom: 2px solid #4f6a64; }
+    .squid .pupil { top: 7px; left: 8px; width: 7px; height: 10px; border-radius: 4px; background: #6d2814; }
+    .squid-nose { position: absolute; top: 36px; left: 21px; width: 17px; height: 42px; background: linear-gradient(180deg, #a5d6cd, #7cbcb2); border: 2px solid #4f9a94; border-radius: 40% 40% 55% 55%; z-index: 3; }
+    .squid-mouth { position: absolute; top: 86px; left: 32px; width: 30px; height: 10px; border: 3px solid #4f6a64; border-top: none; border-radius: 0 0 22px 22px; transform: rotate(180deg); z-index: 2; }
+    .squid-shirt { position: absolute; top: 96px; left: 14px; width: 68px; height: 52px; background: linear-gradient(180deg, #a1887f, #8d6e63); border: 2px solid #5d4037; border-radius: 12px 12px 6px 6px; }
+    .squid-shirt::after { content: ''; position: absolute; top: 14px; left: 24px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #5d4037; border-top: none; transform: rotate(45deg); }
+    .squid-leg { position: absolute; top: 144px; width: 11px; height: 50px; background: linear-gradient(180deg, #b2dfdb, #80cbc4); border: 2px solid #4f9a94; border-radius: 6px 6px 14px 14px; transform-origin: top center; }
+    .squid-leg.a { left: 18px; transform: rotate(5deg); }
+    .squid-leg.b { left: 36px; transform: rotate(-3deg); height: 52px; }
+    .squid-leg.c { left: 54px; transform: rotate(3deg); }
+    .squid-leg.d { left: 70px; transform: rotate(-5deg); height: 48px; }
+
+    /* — PATRICK — */
+    .pat { left: 590px; width: 150px; height: 158px; animation: idlepat 3.4s ease-in-out infinite alternate; }
+    @keyframes idlepat { from { margin-bottom: 0; } to { margin-bottom: 6px; } }
+    .pat:hover { transform: translateY(-10px) rotate(-7deg); }
+    .pat-body {
+      position: absolute; inset: 0;
+      background: linear-gradient(165deg, #ffab91, #f4737f 60%, #e35d6a);
+      clip-path: polygon(50% 0%, 64% 36%, 100% 40%, 73% 62%, 84% 100%, 50% 79%, 16% 100%, 27% 62%, 0% 40%, 36% 36%);
+      box-shadow: 0 8px 14px rgba(0,0,0,.18);
+    }
+    .pat-shorts {
+      position: absolute; bottom: 8px; left: 30px; width: 90px; height: 38px;
+      background:
+        radial-gradient(circle at 22% 36%, #8e24aa 0 5px, transparent 6px),
+        radial-gradient(circle at 58% 64%, #8e24aa 0 5px, transparent 6px),
+        radial-gradient(circle at 84% 30%, #8e24aa 0 5px, transparent 6px),
+        linear-gradient(180deg, #aed581, #8bc34a);
+      clip-path: polygon(22% 0%, 78% 0%, 92% 55%, 73% 45%, 50% 88%, 27% 45%, 8% 55%);
+    }
+    .pat-eye { position: absolute; top: 38px; width: 26px; height: 30px; background: #fff; border: 2px solid #c95560; border-radius: 50%; }
+    .pat-eye.a { left: 48px; } .pat-eye.b { left: 78px; }
+    .pat-eye::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; height: 10px; background: #f4737f; border-radius: 50% 50% 0 0; }
+    .pat .pupil { top: 12px; left: 9px; width: 7px; height: 7px; }
+    .pat-brow { position: absolute; top: 30px; width: 18px; height: 4px; background: #b03e4a; border-radius: 3px; }
+    .pat-brow.a { left: 50px; transform: rotate(8deg); }
+    .pat-brow.b { left: 84px; transform: rotate(-8deg); }
+    .pat-mouth { position: absolute; top: 76px; left: 56px; width: 40px; height: 18px; border: 3px solid #a8323e; border-top: none; border-radius: 0 0 40px 40px; }
+    .pat-belly { position: absolute; top: 64px; left: 72px; width: 6px; height: 6px; border-radius: 50%; background: #c95560; opacity: 0; }
+
+    /* — SANDY — */
+    .sandy { left: 760px; width: 104px; height: 172px; }
+    .sandy:hover { transform: translateY(-12px) rotate(4deg); }
+    .sandy-helmet {
+      position: absolute; top: 0; left: 17px; width: 70px; height: 70px; border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.5), rgba(190,230,255,.16) 55%);
+      border: 3px solid #e0e0e0; z-index: 3;
+    }
+    .sandy-helmet::after { content: ''; position: absolute; top: 8px; left: 12px; width: 18px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.75); transform: rotate(-24deg); }
+    .sandy-flower { position: absolute; top: -12px; left: 38px; font-size: 17px; z-index: 4; }
+    .sandy-face { position: absolute; top: 14px; left: 28px; width: 48px; height: 46px; background: linear-gradient(160deg, #bc8a5a, #9c6f42); border-radius: 48%; z-index: 2; }
+    .sandy-eye { position: absolute; top: 12px; width: 15px; height: 15px; background: #fff; border-radius: 50%; }
+    .sandy-eye.a { left: 6px; } .sandy-eye.b { right: 6px; }
+    .sandy .pupil { top: 4px; left: 4px; width: 6px; height: 6px; }
+    .sandy-nose { position: absolute; top: 22px; left: 20px; width: 8px; height: 7px; background: #4e342e; border-radius: 50%; }
+    .sandy-teeth { position: absolute; top: 31px; left: 17px; width: 14px; height: 10px; background: #fff; border: 1px solid #bcaaa4; border-radius: 0 0 3px 3px; }
+    .sandy-suit { position: absolute; top: 64px; left: 24px; width: 56px; height: 66px; background: linear-gradient(180deg, #fafafa, #e0e0e0); border: 2px solid #9e9e9e; border-radius: 16px 16px 10px 10px; }
+    .sandy-suit::after { content: '🌰'; position: absolute; top: 18px; left: 17px; font-size: 14px; }
+    .sandy-belt { position: absolute; top: 96px; left: 24px; width: 56px; height: 8px; background: #fb8c00; }
+    .sandy-arm { position: absolute; top: 70px; width: 12px; height: 44px; background: linear-gradient(180deg, #fafafa, #e0e0e0); border: 2px solid #9e9e9e; border-radius: 8px; transform-origin: top center; transition: transform .25s; }
+    .sandy-arm.a { left: 8px; transform: rotate(18deg); }
+    .sandy-arm.b { right: 8px; transform: rotate(-18deg); }
+    .sandy:hover .sandy-arm.b { transform: rotate(-130deg); }
+    .sandy-leg { position: absolute; top: 126px; width: 14px; height: 38px; background: linear-gradient(180deg, #fafafa, #d6d6d6); border: 2px solid #9e9e9e; border-radius: 8px 8px 10px 10px; }
+    .sandy-leg.a { left: 32px; } .sandy-leg.b { left: 56px; }
+    .sandy-tail { position: absolute; top: 86px; right: -8px; width: 26px; height: 30px; background: #a9764a; border-radius: 60% 60% 60% 10%; transform: rotate(30deg); z-index: -1; }
+
+    /* — SR. SIRIGUEJO — */
+    .krabs { left: 930px; width: 130px; height: 158px; }
+    .krabs:hover { transform: translateY(-10px); }
+    .krabs-stalk { position: absolute; top: 0; width: 7px; height: 42px; background: #e2422c; border-radius: 4px; transform-origin: bottom center; }
+    .krabs-stalk.a { left: 48px; transform: rotate(-7deg); }
+    .krabs-stalk.b { left: 70px; transform: rotate(7deg); }
+    .krabs-eye { position: absolute; top: -17px; left: -6px; width: 19px; height: 19px; background: #fff; border: 2px solid #a32616; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .krabs .pupil { top: 5px; left: 5px; width: 7px; height: 7px; }
+    .krabs:hover .pupil.money { background: #fff; }
+    .krabs-eye .cash { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #1b8a3a; }
+    .krabs:hover .cash { display: flex; }
+    .krabs:hover .pupil { opacity: 0; }
+    .krabs-body {
+      position: absolute; top: 38px; left: 13px; width: 104px; height: 72px;
+      background: radial-gradient(circle at 35% 28%, #ff6e50, #e2422c 60%, #bf3018);
+      border-radius: 50% 50% 42% 42%; border: 2px solid #a32616;
+      box-shadow: 0 8px 12px rgba(0,0,0,.18); z-index: 2;
+    }
+    .krabs-smile { position: absolute; top: 34px; left: 28px; width: 48px; height: 22px; border: 3px solid #7c1d0e; border-top: none; border-radius: 0 0 48px 48px; }
+    .krabs-pants { position: absolute; top: 104px; left: 23px; width: 84px; height: 26px; background: linear-gradient(180deg, #5c9ed9 0 60%, #3f7fbf 60%); border: 2px solid #2c5f93; border-radius: 6px; z-index: 1; }
+    .krabs-belt { position: absolute; top: 100px; left: 23px; width: 84px; height: 9px; background: #263238; z-index: 3; }
+    .krabs-belt::after { content: ''; position: absolute; top: 1px; left: 36px; width: 12px; height: 7px; background: #ffd54f; border-radius: 2px; }
+    .krabs-claw { position: absolute; top: 58px; width: 38px; height: 34px; background: radial-gradient(circle at 40% 35%, #ff6e50, #d23a20); border: 2px solid #a32616; border-radius: 50%; transition: transform .25s; }
+    .krabs-claw::after { content: ''; position: absolute; width: 16px; height: 12px; background: #87ceeb00; border-radius: 50%; box-shadow: 0 0 0 100px rgba(0,0,0,0); }
+    .krabs-claw.a { left: -22px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 62%, 46% 50%, 0 38%); transform: rotate(-12deg); }
+    .krabs-claw.b { right: -22px; clip-path: polygon(0 0, 100% 0, 100% 38%, 54% 50%, 100% 62%, 100% 100%, 0 100%); transform: rotate(12deg); }
+    .krabs:hover .krabs-claw.a { transform: rotate(-36deg) translateY(-6px); }
+    .krabs:hover .krabs-claw.b { transform: rotate(36deg) translateY(-6px); }
+    .krabs-leg { position: absolute; top: 128px; width: 6px; height: 28px; background: #d23a20; border-radius: 4px; transform-origin: top center; }
+    .krabs-leg.l1 { left: 38px; transform: rotate(10deg); }
+    .krabs-leg.l2 { left: 52px; transform: rotate(4deg); }
+    .krabs-leg.l3 { left: 70px; transform: rotate(-4deg); }
+    .krabs-leg.l4 { left: 84px; transform: rotate(-10deg); }
+
+    /* — PLANKTON — */
+    .plank { left: 1135px; bottom: 66px; width: 30px; height: 52px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+    .plank:hover { transform: translateY(-8px) scale(2.4); z-index: 12; }
+    .plank-body { position: absolute; bottom: 0; left: 4px; width: 22px; height: 36px; background: linear-gradient(160deg, #66bb6a, #2e7d32); border-radius: 46% 46% 40% 40%; border: 2px solid #1b5e20; }
+    .plank-eye { position: absolute; top: 4px; left: 4px; width: 11px; height: 11px; background: #fffde7; border: 1px solid #1b5e20; border-radius: 50%; }
+    .plank .pupil { top: 3px; left: 3px; width: 4px; height: 4px; background: #c62828; }
+    .plank-ant { position: absolute; bottom: 34px; width: 2px; height: 18px; background: #1b5e20; border-radius: 2px; transform-origin: bottom center; }
+    .plank-ant.a { left: 8px; transform: rotate(-16deg); }
+    .plank-ant.b { left: 18px; transform: rotate(16deg); }
+    .plank-ant::after { content: ''; position: absolute; top: -4px; left: -2px; width: 5px; height: 5px; border-radius: 50%; background: #43a047; }
+    .plank-mouth { position: absolute; top: 18px; left: 7px; width: 9px; height: 4px; border: 2px solid #1b5e20; border-top: none; border-radius: 0 0 8px 8px; }
+
+    /* ════════ Modo festa ════════ */
+    #world.party .char { animation: dance .42s ease-in-out infinite alternate !important; }
+    @keyframes dance {
+      from { transform: translateY(0) rotate(-7deg); }
+      to   { transform: translateY(-16px) rotate(7deg); }
     }
 
-    /* ── Bolhas ─────────────────────────────────────────────── */
-    .bubble {
-      position: fixed; bottom: -60px; border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%,
-        rgba(255,255,255,.75), rgba(255,255,255,.08));
-      border: 1px solid rgba(255,255,255,.35);
-      animation: rise linear infinite;
+    /* ════════ Águas-vivas ════════ */
+    .jelly { position: fixed; width: 52px; height: 56px; z-index: 8; cursor: pointer; will-change: transform; filter: drop-shadow(0 0 10px rgba(255,150,220,.45)); }
+    .jelly-dome {
+      position: absolute; top: 0; width: 52px; height: 36px;
+      background: radial-gradient(circle at 38% 30%, rgba(255,210,240,.95), rgba(255,110,200,.75) 70%);
+      border-radius: 50% 50% 16% 16% / 60% 60% 14% 14%;
     }
-    @keyframes rise {
-      0%   { bottom: -60px; opacity: .7; transform: translateX(0) scale(1); }
-      50%  { opacity: .45;  transform: translateX(18px) scale(1.1); }
-      100% { bottom: 110vh; opacity: 0;  transform: translateX(-18px) scale(.8); }
-    }
-    .bubble:nth-child(1) {left:4%;width:11px;height:11px;animation-duration:7s;animation-delay:0s}
-    .bubble:nth-child(2) {left:13%;width:20px;height:20px;animation-duration:9s;animation-delay:1s}
-    .bubble:nth-child(3) {left:23%;width:8px;height:8px;animation-duration:5s;animation-delay:2s}
-    .bubble:nth-child(4) {left:34%;width:15px;height:15px;animation-duration:8s;animation-delay:.5s}
-    .bubble:nth-child(5) {left:44%;width:10px;height:10px;animation-duration:10s;animation-delay:3s}
-    .bubble:nth-child(6) {left:54%;width:18px;height:18px;animation-duration:6s;animation-delay:1.5s}
-    .bubble:nth-child(7) {left:63%;width:13px;height:13px;animation-duration:8s;animation-delay:2.5s}
-    .bubble:nth-child(8) {left:73%;width:22px;height:22px;animation-duration:7s;animation-delay:.8s}
-    .bubble:nth-child(9) {left:83%;width:9px;height:9px;animation-duration:5s;animation-delay:4s}
-    .bubble:nth-child(10){left:91%;width:16px;height:16px;animation-duration:9s;animation-delay:1.2s}
-    .bubble:nth-child(11){left:8%;width:26px;height:26px;animation-duration:12s;animation-delay:2s}
-    .bubble:nth-child(12){left:50%;width:7px;height:7px;animation-duration:6s;animation-delay:3.5s}
-    .bubble:nth-child(13){left:69%;width:12px;height:12px;animation-duration:8s;animation-delay:.3s}
-    .bubble:nth-child(14){left:30%;width:19px;height:19px;animation-duration:11s;animation-delay:1.8s}
-    .bubble:nth-child(15){left:79%;width:10px;height:10px;animation-duration:7s;animation-delay:4.5s}
+    .jelly-dome::after { content: ''; position: absolute; top: 9px; left: 9px; width: 7px; height: 7px; border-radius: 50%; background: rgba(160,40,120,.45); box-shadow: 14px 4px 0 rgba(160,40,120,.4), 26px -2px 0 rgba(160,40,120,.4); }
+    .jelly-t { position: absolute; top: 33px; width: 5px; height: 24px; background: linear-gradient(180deg, rgba(255,130,210,.85), rgba(255,130,210,.1)); border-radius: 4px; transform-origin: top center; animation: tent .9s ease-in-out infinite alternate; }
+    .jelly-t.t1 { left: 8px; } .jelly-t.t2 { left: 19px; animation-delay: .2s; }
+    .jelly-t.t3 { left: 30px; animation-delay: .4s; } .jelly-t.t4 { left: 41px; animation-delay: .1s; }
+    @keyframes tent { from { transform: skewX(-14deg); } to { transform: skewX(14deg); } }
+    .jelly.zap .jelly-dome { background: radial-gradient(circle at 38% 30%, #fff59d, #ffd740 70%); }
+    .jelly.caught { transition: transform .45s ease, opacity .45s ease; transform: scale(2.2) !important; opacity: 0 !important; }
 
-    /* ── Peixes ─────────────────────────────────────────────── */
-    .fish {
-      position: fixed; font-size: 26px;
-      animation: swim linear infinite; opacity: .75;
+    /* ════════ Bolhas ════════ */
+    .bub {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 9;
+      background: radial-gradient(circle at 32% 30%, rgba(255,255,255,.85), rgba(255,255,255,.06) 65%);
+      border: 1px solid rgba(255,255,255,.5);
+      animation: bubup var(--d, 3s) ease-out forwards;
     }
-    .fish:nth-child(1){top:18%;animation-duration:20s;animation-delay:0s}
-    .fish:nth-child(2){top:52%;animation-duration:25s;animation-delay:9s;font-size:18px}
-    .fish:nth-child(3){top:38%;animation-duration:16s;animation-delay:5s;font-size:14px}
-    @keyframes swim {
-      0%  { left:-80px;  transform:scaleX(1); }
-      49% {              transform:scaleX(1); }
-      50% { left:110vw;  transform:scaleX(-1); }
-      100%{ left:-80px;  transform:scaleX(-1); }
+    @keyframes bubup {
+      0% { transform: translate(0,0) scale(.5); opacity: .9; }
+      100% { transform: translate(var(--dx, 0px), var(--dy, -240px)) scale(1.15); opacity: 0; }
     }
 
-    /* ── Estrelas do mar ────────────────────────────────────── */
-    .star { position: fixed; bottom: 4px; animation: pulse 2.5s ease-in-out infinite; }
-    .star:nth-child(1){left:7%;font-size:22px;animation-delay:0s}
-    .star:nth-child(2){left:38%;font-size:16px;animation-delay:.7s}
-    .star:nth-child(3){left:60%;font-size:28px;animation-delay:1.2s}
-    .star:nth-child(4){left:89%;font-size:19px;animation-delay:.4s}
-    @keyframes pulse {
-      0%,100%{ transform:scale(1); opacity:.8; }
-      50%    { transform:scale(1.2); opacity:1; }
+    /* ════════ HUD ════════ */
+    #title { position: fixed; top: 18px; left: 0; right: 0; text-align: center; z-index: 20; pointer-events: none; }
+    #title h1 { font-family: 'Luckiest Guy', 'Comic Sans MS', cursive; font-size: clamp(34px, 6vw, 64px); letter-spacing: 2px; }
+    #title h1 span {
+      display: inline-block; color: #ffe93b;
+      text-shadow: 3px 3px 0 #d4700a, -2px -2px 0 #07395f, 0 0 24px rgba(255,220,60,.45);
+      animation: wave 2.4s ease-in-out infinite;
+    }
+    #title h1 span:hover { animation: spinletter .55s ease; color: #ff8a65; }
+    @keyframes wave { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+    @keyframes spinletter { from { transform: rotate(0) scale(1.4); } to { transform: rotate(360deg) scale(1); } }
+    #title p { color: #d6f3ff; font-size: clamp(12px, 1.6vw, 16px); margin-top: 4px; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
+    #hud {
+      position: fixed; top: 16px; right: 16px; z-index: 21;
+      background: rgba(4, 32, 58, .55); backdrop-filter: blur(8px);
+      border: 2px solid rgba(255,255,255,.25); border-radius: 16px;
+      padding: 10px 16px; color: #fff; font-size: 15px; line-height: 1.7;
+      box-shadow: 0 6px 18px rgba(0,0,0,.3);
+    }
+    #hud b { color: #ffe93b; font-size: 17px; }
+
+    #hint {
+      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 21; background: rgba(4, 32, 58, .5); backdrop-filter: blur(6px);
+      color: #cfeeff; font-size: 13px; padding: 7px 18px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.2); white-space: nowrap;
+      animation: hintpulse 3s ease-in-out infinite;
+    }
+    @keyframes hintpulse { 0%,100% { opacity: .85; } 50% { opacity: .5; } }
+
+    #credit { position: fixed; bottom: 12px; left: 12px; z-index: 21; color: rgba(255,255,255,.5); font-size: 11px; }
+
+    /* ════════ Balão de fala ════════ */
+    #speech {
+      position: fixed; z-index: 30; max-width: 250px;
+      background: #fff; color: #15324c; border: 3px solid #07395f;
+      border-radius: 18px; padding: 10px 16px; font-size: 15px; line-height: 1.4;
+      box-shadow: 0 8px 20px rgba(0,0,0,.3);
+      opacity: 0; transform: translateY(8px) scale(.92); pointer-events: none;
+      transition: opacity .18s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+    }
+    #speech.show { opacity: 1; transform: translateY(0) scale(1); }
+    #speech::after {
+      content: ''; position: absolute; bottom: -12px; left: 36px;
+      width: 18px; height: 18px; background: #fff;
+      border-right: 3px solid #07395f; border-bottom: 3px solid #07395f;
+      transform: rotate(45deg); border-radius: 0 0 5px 0;
     }
 
-    /* ── Card principal ─────────────────────────────────────── */
-    .card {
-      background: rgba(255,255,255,.13);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 2px solid rgba(255,255,255,.28);
-      border-radius: 28px; padding: 44px 52px;
-      max-width: 520px; width: 100%;
-      position: relative; z-index: 10;
-      transition: transform .35s ease, box-shadow .35s ease;
+    .floatpt {
+      position: fixed; z-index: 31; font-family: 'Luckiest Guy', cursive;
+      font-size: 24px; color: #ffe93b; text-shadow: 2px 2px 0 #d4700a;
+      pointer-events: none; animation: floatup 1s ease-out forwards;
     }
-    .card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 24px 64px rgba(0,0,0,.45);
-    }
-
-    .sponge {
-      font-size: 96px; display: block; margin-bottom: 14px;
-      animation: bob 1s ease-in-out infinite alternate;
-      cursor: default; transition: font-size .2s;
-      user-select: none;
-    }
-    .sponge:hover { animation: spin .5s linear; font-size: 120px; }
-    @keyframes bob {
-      from { transform: translateY(0) rotate(-6deg); }
-      to   { transform: translateY(-22px) rotate(6deg); }
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg) scale(1.25); }
-      to   { transform: rotate(360deg) scale(1.25); }
-    }
-
-    h1 {
-      font-size: 1.9em; color: #fff;
-      text-shadow: 2px 2px 0 #d4700a, 0 0 20px rgba(255,200,0,.5);
-      margin-bottom: 8px; line-height: 1.25;
-    }
-    .location {
-      font-size: .9em; color: #9ad4ea;
-      letter-spacing: 1px; margin-bottom: 18px;
-    }
-    .subtitle {
-      font-size: 1em; color: rgba(255,255,255,.88);
-      background: rgba(0,0,0,.22); border-radius: 14px;
-      padding: 10px 18px; margin-bottom: 22px; line-height: 1.65;
-    }
-    .badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #1a7a3d, #27ae60);
-      color: #fff; border-radius: 22px; padding: 11px 30px;
-      font-size: 1em; font-weight: bold;
-      box-shadow: 0 4px 18px rgba(0,0,0,.35);
-      transition: transform .2s, box-shadow .2s; cursor: default;
-    }
-    .badge:hover {
-      transform: scale(1.1);
-      box-shadow: 0 8px 24px rgba(0,0,0,.45);
-    }
+    @keyframes floatup { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-70px); opacity: 0; } }
   </style>
 </head>
-<body>
-  <div class="seaweed"></div><div class="seaweed"></div>
-  <div class="seaweed"></div><div class="seaweed"></div>
-  <div class="seaweed"></div><div class="seaweed"></div>
+<body data-app="fenda-do-biquini-v2">
 
-  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+  <div class="ray r1"></div><div class="ray r2"></div><div class="ray r3"></div>
 
-  <div class="fish">🐠</div>
-  <div class="fish">🐟</div>
-  <div class="fish">🐡</div>
+  <div class="flower f1"><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
+  <div class="flower f2"><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
+  <div class="flower f3"><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
+  <div class="flower f4"><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
+  <div class="flower f5"><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
 
-  <div class="star">⭐</div><div class="star">🌟</div>
-  <div class="star">⭐</div><div class="star">🌟</div>
-
-  <div class="card">
-    <span class="sponge">🧽</span>
-    <h1>Olá, Fenda do Biquíni!</h1>
-    <p class="location">📍 Fenda do Biquíni · Oceano Pacífico</p>
-    <p class="subtitle">
-      Seu pipeline <strong>GitHub → Google Apps Script</strong><br>
-      está funcionando perfeitamente!
-    </p>
-    <div class="badge">✅ Infraestrutura validada</div>
+  <div id="title">
+    <h1 id="titletext"></h1>
+    <p>passeie com o mouse pela Fenda do Biquíni 🫧 converse com todo mundo 🪼 capture águas-vivas</p>
   </div>
+
+  <div id="hud">🪼 Águas-vivas: <b id="cjelly">0</b><br>🫧 Bolhas: <b id="cbub">0</b></div>
+
+  <div id="world">
+    <!-- camada distante -->
+    <div class="plx" data-depth="10">
+      <div class="coral c1"><div class="stem"></div><div class="stem"></div><div class="stem"></div></div>
+      <div class="coral c2"><div class="stem"></div><div class="stem"></div><div class="stem"></div></div>
+      <div class="coral c3"><div class="stem"></div><div class="stem"></div><div class="stem"></div></div>
+    </div>
+
+    <!-- camada média: areia + casas -->
+    <div class="plx" data-depth="22">
+      <div class="sand"></div>
+
+      <div class="house pineapple" data-say="Casa do Bob Esponja 🍍|Lar doce abacaxi!|Toc toc... o Gary está aí?">
+        <div class="pine-leaf l4"></div><div class="pine-leaf l2"></div><div class="pine-leaf l1"></div>
+        <div class="pine-leaf l3"></div><div class="pine-leaf l5"></div>
+        <div class="pine-body"></div>
+        <div class="pine-win a"></div><div class="pine-win b"></div>
+        <div class="pine-door"></div>
+      </div>
+
+      <div class="house moai" data-say="Casa do Lula Molusco 🗿|Shhh! Hora do clarinete.|Um moai de mau humor.">
+        <div class="moai-head">
+          <div class="moai-brow"></div>
+          <div class="moai-eye a"></div><div class="moai-eye b"></div>
+          <div class="moai-nose"></div>
+          <div class="moai-ear a"></div><div class="moai-ear b"></div>
+          <div class="moai-mouth"></div>
+          <div class="moai-door"></div>
+        </div>
+      </div>
+
+      <div class="house rock" data-say="Pedra do Patrick 🪨|Debaixo dela: nada. E o Patrick.|A melhor casa-pedra do oceano.">
+        <div class="rock-ant"></div>
+        <div class="rock-body"></div>
+      </div>
+
+      <div class="house krusty" data-say="Siri Cascudo 🦀|Lar do Hambúrguer de Siri!|A fórmula secreta mora aqui.">
+        <div class="kk-mast"></div><div class="kk-flag"></div>
+        <div class="kk-roof"></div>
+        <div class="kk-sign">SIRI CASCUDO</div>
+        <div class="kk-hull"></div>
+        <div class="kk-win a"></div><div class="kk-win b"></div>
+        <div class="kk-door"></div>
+      </div>
+
+      <div class="house chum" data-say="Balde de Lixo 🪣|0 clientes hoje. De novo.|Quartel-general do Plankton.">
+        <div class="chum-handle"></div>
+        <div class="chum-glove">🧤</div>
+        <div class="chum-bucket"></div>
+        <div class="chum-label">BALDE DE LIXO</div>
+        <div class="chum-door"></div>
+      </div>
+    </div>
+
+    <!-- camada da frente: algas + personagens -->
+    <div class="plx" data-depth="38">
+      <div class="weed w1"></div><div class="weed w2"></div><div class="weed w3"></div>
+      <div class="weed w4"></div><div class="weed w5"></div><div class="weed w6"></div>
+
+      <div class="char bob" id="bob" data-say="Estou pronto! Estou pronto! 🍍|Imaginaçãããão... 🌈|A-rá-rá-rá-rá! Clica em mim pra FESTA! 🎉">
+        <div class="bob-arm a"></div><div class="bob-arm b"></div>
+        <div class="bob-leg a"></div><div class="bob-leg b"></div>
+        <div class="bob-shoe a"></div><div class="bob-shoe b"></div>
+        <div class="bob-body"></div>
+        <div class="bob-pants"></div>
+        <div class="bob-tie"></div>
+        <div class="bob-eye a"><div class="bob-lash"></div><div class="bob-iris"><div class="pupil"></div></div></div>
+        <div class="bob-eye b"><div class="bob-lash"></div><div class="bob-iris"><div class="pupil"></div></div></div>
+        <div class="bob-nose"></div>
+        <div class="bob-cheek a"></div><div class="bob-cheek b"></div>
+        <div class="bob-smile"></div>
+        <div class="bob-teeth"><span></span><span></span></div>
+      </div>
+
+      <div class="char gary" data-say="Miau. 🐌|Miau? 🐌|...miau. (tradução: oi!)">
+        <div class="gary-stalk a"><div class="gary-eye"><div class="pupil"></div></div></div>
+        <div class="gary-stalk b"><div class="gary-eye"><div class="pupil"></div></div></div>
+        <div class="gary-body"></div>
+        <div class="gary-shell"></div>
+      </div>
+
+      <div class="char squid" data-say="Mais um dia, mais uma enxaqueca... 🎷|Silêncio! Estou praticando clarinete!|Por que eu moro entre ELES?">
+        <div class="squid-leg a"></div><div class="squid-leg b"></div>
+        <div class="squid-leg c"></div><div class="squid-leg d"></div>
+        <div class="squid-shirt"></div>
+        <div class="squid-head">
+          <div class="squid-eye a"><div class="pupil"></div></div>
+          <div class="squid-eye b"><div class="pupil"></div></div>
+          <div class="squid-nose"></div>
+          <div class="squid-mouth"></div>
+        </div>
+      </div>
+
+      <div class="char pat" data-say="Isso aqui é Patrick! 🪨|Conhecimento não substitui amizade. ⭐|Uhhh... eu esqueci o que ia dizer. 😴">
+        <div class="pat-body"></div>
+        <div class="pat-shorts"></div>
+        <div class="pat-brow a"></div><div class="pat-brow b"></div>
+        <div class="pat-eye a"><div class="pupil"></div></div>
+        <div class="pat-eye b"><div class="pupil"></div></div>
+        <div class="pat-mouth"></div>
+      </div>
+
+      <div class="char sandy" data-say="Eita, peixinho! 🥋|Lá no Texas a gente faz assim! 🤠|Karatê! Hi-yah! ✊">
+        <div class="sandy-tail"></div>
+        <div class="sandy-leg a"></div><div class="sandy-leg b"></div>
+        <div class="sandy-suit"></div>
+        <div class="sandy-belt"></div>
+        <div class="sandy-arm a"></div><div class="sandy-arm b"></div>
+        <div class="sandy-face">
+          <div class="sandy-eye a"><div class="pupil"></div></div>
+          <div class="sandy-eye b"><div class="pupil"></div></div>
+          <div class="sandy-nose"></div>
+          <div class="sandy-teeth"></div>
+        </div>
+        <div class="sandy-helmet"></div>
+        <div class="sandy-flower">🌸</div>
+      </div>
+
+      <div class="char krabs" data-say="Eu sinto cheiro de DINHEIRO! 🤑|Bem-vindo ao Siri Cascudo! 🦀|Me dá meu dinheiro!!">
+        <div class="krabs-stalk a"><div class="krabs-eye"><div class="pupil money"></div><div class="cash">$</div></div></div>
+        <div class="krabs-stalk b"><div class="krabs-eye"><div class="pupil money"></div><div class="cash">$</div></div></div>
+        <div class="krabs-leg l1"></div><div class="krabs-leg l2"></div>
+        <div class="krabs-leg l3"></div><div class="krabs-leg l4"></div>
+        <div class="krabs-pants"></div>
+        <div class="krabs-body"><div class="krabs-smile"></div></div>
+        <div class="krabs-belt"></div>
+        <div class="krabs-claw a"></div><div class="krabs-claw b"></div>
+      </div>
+
+      <div class="char plank" data-say="A fórmula secreta SERÁ minha! 😈|Eu fui pra FACULDADE!|1% maldade, 99% gênio do mal.">
+        <div class="plank-ant a"></div><div class="plank-ant b"></div>
+        <div class="plank-body">
+          <div class="plank-eye"><div class="pupil"></div></div>
+          <div class="plank-mouth"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="speech"></div>
+  <div id="hint">🫧 mexa o mouse • clique nas 🪼 águas-vivas • clique no Bob 🧽</div>
+  <div id="credit">🧽 Fenda do Biquíni · GitHub → Apps Script</div>
+
+  <script>
+    (function () {
+      'use strict';
+      var W = window, D = document;
+      var world = D.getElementById('world');
+      var mx = W.innerWidth / 2, my = W.innerHeight / 2;   // posição do mouse (px)
+      var nmx = 0, nmy = 0;                                 // normalizado -1..1
+      var jellyCaught = 0, bubPopped = 0;
+
+      /* ── Título letra a letra ── */
+      var titleStr = 'Fenda do Biquíni';
+      var h1 = D.getElementById('titletext');
+      for (var i = 0; i < titleStr.length; i++) {
+        var s = D.createElement('span');
+        s.textContent = titleStr[i] === ' ' ? ' ' : titleStr[i];
+        s.style.animationDelay = (i * 0.09) + 's';
+        h1.appendChild(s);
+      }
+
+      /* ── Escala responsiva do mundo ── */
+      function setScale() {
+        var s = Math.min(1, W.innerWidth / 1320, W.innerHeight / 780);
+        world.style.setProperty('--s', Math.max(0.42, s).toFixed(3));
+      }
+      setScale();
+      W.addEventListener('resize', setScale);
+
+      /* ── Som (WebAudio, sintetizado — sem arquivos) ── */
+      var actx = null;
+      function audio() {
+        if (!actx) { try { actx = new (W.AudioContext || W.webkitAudioContext)(); } catch (e) {} }
+        return actx;
+      }
+      function pop(freq, dur) {
+        var a = audio(); if (!a) return;
+        try {
+          var o = a.createOscillator(), g = a.createGain();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(freq, a.currentTime);
+          o.frequency.exponentialRampToValueAtTime(freq * 0.4, a.currentTime + dur);
+          g.gain.setValueAtTime(0.12, a.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
+          o.connect(g); g.connect(a.destination);
+          o.start(); o.stop(a.currentTime + dur);
+        } catch (e) {}
+      }
+
+      /* ── Bolhas ── */
+      var MAXBUB = 46, bubCount = 0;
+      function bubble(x, y, size, dx, dy, dur) {
+        if (bubCount >= MAXBUB) return;
+        bubCount++;
+        var b = D.createElement('div');
+        b.className = 'bub';
+        b.style.left = (x - size / 2) + 'px';
+        b.style.top = (y - size / 2) + 'px';
+        b.style.width = b.style.height = size + 'px';
+        b.style.setProperty('--dx', dx + 'px');
+        b.style.setProperty('--dy', dy + 'px');
+        b.style.setProperty('--d', dur + 's');
+        D.body.appendChild(b);
+        setTimeout(function () { b.remove(); bubCount--; }, dur * 1000);
+      }
+      function burst(x, y, n) {
+        for (var i = 0; i < n; i++) {
+          bubble(x, y, 6 + Math.random() * 16,
+            (Math.random() - 0.5) * 160, -90 - Math.random() * 200,
+            1.2 + Math.random() * 1.4);
+        }
+        bubPopped += n;
+        D.getElementById('cbub').textContent = bubPopped;
+      }
+
+      /* ── Rastro de bolhas do mouse ── */
+      var lastX = mx, lastY = my;
+      function trail(x, y) {
+        var dx = x - lastX, dy = y - lastY;
+        if (dx * dx + dy * dy > 1400) {
+          lastX = x; lastY = y;
+          bubble(x + (Math.random() - 0.5) * 14, y + (Math.random() - 0.5) * 14,
+            4 + Math.random() * 9, (Math.random() - 0.5) * 50,
+            -60 - Math.random() * 120, 1.6 + Math.random());
+        }
+      }
+
+      function setMouse(x, y) {
+        mx = x; my = y;
+        nmx = (x / W.innerWidth) * 2 - 1;
+        nmy = (y / W.innerHeight) * 2 - 1;
+        trail(x, y);
+      }
+      D.addEventListener('mousemove', function (e) { setMouse(e.clientX, e.clientY); });
+      D.addEventListener('touchmove', function (e) {
+        if (e.touches.length) setMouse(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      D.addEventListener('pointerdown', function (e) {
+        audio();
+        if (e.target.closest('.jelly')) return;
+        burst(e.clientX, e.clientY, 7);
+        pop(520 + Math.random() * 240, 0.14);
+      });
+
+      /* ── Balão de fala ── */
+      var speech = D.getElementById('speech'), speechTimer = null, hideTimer = null;
+      function say(el, txt) {
+        clearTimeout(hideTimer);
+        var r = el.getBoundingClientRect();
+        speech.textContent = txt;
+        speech.classList.add('show');
+        var x = Math.max(8, Math.min(W.innerWidth - 268, r.left + r.width / 2 - 60));
+        var y = Math.max(8, r.top - speech.offsetHeight - 26);
+        speech.style.left = x + 'px';
+        speech.style.top = y + 'px';
+        // reposiciona depois que o texto define a altura real
+        requestAnimationFrame(function () {
+          speech.style.top = Math.max(8, r.top - speech.offsetHeight - 26) + 'px';
+        });
+      }
+      function hideSpeech(delay) {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () { speech.classList.remove('show'); }, delay || 140);
+      }
+      var talkers = D.querySelectorAll('[data-say]');
+      for (var t = 0; t < talkers.length; t++) {
+        (function (el) {
+          var lines = el.getAttribute('data-say').split('|');
+          function talk() { say(el, lines[Math.floor(Math.random() * lines.length)]); }
+          el.addEventListener('mouseenter', function () { talk(); pop(700, 0.07); });
+          el.addEventListener('mouseleave', function () { hideSpeech(160); });
+          el.addEventListener('click', function (e) {
+            e.stopPropagation();
+            talk(); hideSpeech(2200);
+            burst(e.clientX || 0, e.clientY || 0, 5);
+            pop(620, 0.12);
+          });
+        })(talkers[t]);
+      }
+
+      /* ── Bob: clique = cambalhota + FESTA ── */
+      var bob = D.getElementById('bob');
+      bob.addEventListener('click', function () {
+        bob.classList.remove('flip');
+        void bob.offsetWidth;
+        bob.classList.add('flip');
+        world.classList.add('party');
+        say(bob, 'FESTA NA FENDA! 🎉🧽');
+        hideSpeech(2600);
+        pop(880, 0.18); pop(660, 0.22);
+        var r = bob.getBoundingClientRect();
+        burst(r.left + r.width / 2, r.top + 20, 14);
+        setTimeout(function () { world.classList.remove('party'); }, 3600);
+      });
+
+      /* ── Olhos que seguem o mouse ── */
+      var pupils = [];
+      var pupilEls = D.querySelectorAll('.pupil');
+      for (var p = 0; p < pupilEls.length; p++) pupils.push(pupilEls[p]);
+      function movePupils() {
+        for (var i = 0; i < pupils.length; i++) {
+          var el = pupils[i];
+          var pr = el.parentElement.getBoundingClientRect();
+          var cx = pr.left + pr.width / 2, cy = pr.top + pr.height / 2;
+          var ang = Math.atan2(my - cy, mx - cx);
+          var dist = Math.min(pr.width / 4 + 1.5, Math.hypot(mx - cx, my - cy) / 14);
+          el.style.transform = 'translate(' + (Math.cos(ang) * dist).toFixed(1) + 'px,' + (Math.sin(ang) * dist).toFixed(1) + 'px)';
+        }
+      }
+
+      /* ── Parallax das camadas ── */
+      var layers = D.querySelectorAll('.plx');
+      function parallax() {
+        for (var i = 0; i < layers.length; i++) {
+          var d = +layers[i].getAttribute('data-depth');
+          layers[i].style.transform = 'translate(' + (-nmx * d).toFixed(1) + 'px,' + (-nmy * d * 0.4).toFixed(1) + 'px)';
+        }
+      }
+
+      /* ── Águas-vivas ── */
+      var jellies = [];
+      function spawnJelly(first) {
+        var el = D.createElement('div');
+        el.className = 'jelly';
+        el.innerHTML = '<div class="jelly-dome"></div><div class="jelly-t t1"></div><div class="jelly-t t2"></div><div class="jelly-t t3"></div><div class="jelly-t t4"></div>';
+        D.body.appendChild(el);
+        var j = {
+          el: el,
+          x: first ? Math.random() * W.innerWidth : (Math.random() < 0.5 ? -70 : W.innerWidth + 70),
+          y: 80 + Math.random() * (W.innerHeight * 0.55),
+          vx: 0, vy: 0,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.35 + Math.random() * 0.45,
+          dir: Math.random() < 0.5 ? 1 : -1,
+          alive: true
+        };
+        el.addEventListener('pointerdown', function (e) {
+          e.stopPropagation();
+          if (!j.alive) return;
+          j.alive = false;
+          el.classList.add('zap');
+          el.classList.add('caught');
+          jellyCaught++;
+          D.getElementById('cjelly').textContent = jellyCaught;
+          pop(980, 0.1); pop(1320, 0.16);
+          burst(j.x + 26, j.y + 20, 6);
+          var f = D.createElement('div');
+          f.className = 'floatpt'; f.textContent = '+1 🪼';
+          f.style.left = j.x + 'px'; f.style.top = (j.y - 10) + 'px';
+          D.body.appendChild(f);
+          setTimeout(function () { f.remove(); }, 1000);
+          setTimeout(function () {
+            el.remove();
+            jellies.splice(jellies.indexOf(j), 1);
+            spawnJelly(false);
+          }, 480);
+        });
+        jellies.push(j);
+      }
+      for (var jn = 0; jn < 6; jn++) spawnJelly(true);
+
+      function moveJellies(dt) {
+        for (var i = 0; i < jellies.length; i++) {
+          var j = jellies[i];
+          if (!j.alive) continue;
+          j.phase += dt * 0.002;
+          j.vx += j.dir * 0.012;
+          j.vy += Math.cos(j.phase) * 0.05;
+          // foge do mouse (tímida, mas charmosa)
+          var dx = (j.x + 26) - mx, dy = (j.y + 20) - my;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < 16900) {
+            var d = Math.sqrt(d2) || 1;
+            j.vx += (dx / d) * 0.5;
+            j.vy += (dy / d) * 0.5;
+          }
+          j.vx *= 0.965; j.vy *= 0.96;
+          j.x += j.vx * j.speed * dt * 0.09;
+          j.y += (j.vy + Math.sin(j.phase) * 0.5) * j.speed * dt * 0.075;
+          if (j.x < -90) { j.x = -90; j.dir = 1; }
+          if (j.x > W.innerWidth + 90) { j.x = W.innerWidth + 90; j.dir = -1; }
+          if (j.x < -80 || j.x > W.innerWidth + 80) j.dir *= 1;
+          if (j.y < 60) { j.y = 60; j.vy = Math.abs(j.vy); }
+          var maxY = W.innerHeight * 0.72;
+          if (j.y > maxY) { j.y = maxY; j.vy = -Math.abs(j.vy); }
+          j.el.style.transform = 'translate(' + j.x.toFixed(1) + 'px,' + j.y.toFixed(1) + 'px) rotate(' + (j.vx * 3).toFixed(1) + 'deg)';
+        }
+      }
+
+      /* ── Loop principal ── */
+      var last = performance.now();
+      function loop(now) {
+        var dt = Math.min(48, now - last);
+        last = now;
+        movePupils();
+        parallax();
+        moveJellies(dt);
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      /* ── Bolhas ambientes sobem sozinhas ── */
+      setInterval(function () {
+        bubble(Math.random() * W.innerWidth, W.innerHeight + 30,
+          5 + Math.random() * 12, (Math.random() - 0.5) * 60,
+          -W.innerHeight * (0.5 + Math.random() * 0.5), 4 + Math.random() * 3);
+      }, 900);
+    })();
+  </script>
 </body>
 </html>
