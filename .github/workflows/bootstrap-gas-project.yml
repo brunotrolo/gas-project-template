@@ -93,7 +93,7 @@ jobs:
             curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
               "https://script.googleapis.com/v1/projects/${{ env.SCRIPT_ID }}/deployments?pageSize=50" \
               > /tmp/deployments.json
-            node > /tmp/urls.env <<'PARSE'
+            node -e "
             const data = require('/tmp/deployments.json');
             const deps = data.deployments || [];
             let headUrl = '', execUrl = '', headId = '', bestVersion = -1;
@@ -113,7 +113,7 @@ jobs:
             console.log('HEAD_URL=' + headUrl);
             console.log('EXEC_URL=' + execUrl);
             console.log('HEAD_ID=' + headId);
-          PARSE
+            " > /tmp/urls.env
           }
 
           # Backoff progressivo: na prática a URL aparece em 5-15s; o máximo

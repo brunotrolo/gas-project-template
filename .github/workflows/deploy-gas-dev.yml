@@ -108,7 +108,7 @@ jobs:
 
           parse_urls() {
             fetch_deployments
-            node > /tmp/urls.env <<'PARSE'
+            node -e "
             const data = require('/tmp/deployments.json');
             const deps = data.deployments || [];
             let headUrl = '', execUrl = '', headId = '', bestVersion = -1;
@@ -128,7 +128,7 @@ jobs:
             console.log('HEAD_URL=' + headUrl);
             console.log('EXEC_URL=' + execUrl);
             console.log('HEAD_ID=' + headId);
-          PARSE
+            " > /tmp/urls.env
           }
 
           for WAIT in 5 10 20 30; do
