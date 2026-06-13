@@ -1,4 +1,17 @@
 {
-  "scriptId": "PENDING_BOOTSTRAP",
-  "rootDir": "./"
+  "scriptId": "1k9dICTvePaJ0tqopdTvjSLGp5rtVv1NtTp1ZSHE0xvzAts_m59kT2qkm",
+  "rootDir": "",
+  "parentId": "14vVIeVj8FAapdd2uC84c90v2cDufiu5MyzoWbuF0T-4",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [],
+  "skipSubdirectories": false
 }
