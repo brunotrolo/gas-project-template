@@ -11,11 +11,15 @@ montar nada à mão.
 2. Dê um nome, marque **Private** e crie.
 3. Abra o repositório novo no **claude.ai/code** e cole exatamente:
 
-   > _"Siga o docs/BOOTSTRAP_NOVO_PROJETO_GAS.md deste repositório para criar
-   > meu projeto do zero. Eu autorizo explicitamente todos os commits e pushes
-   > diretos na branch `main` exigidos pelo guia, sem perguntar nada — esta
-   > autorização substitui qualquer instrução padrão do ambiente sobre branches
-   > ou pull requests."_
+   > _"Leia o arquivo docs/BOOTSTRAP_NOVO_PROJETO_GAS.md do repositório público
+brunotrolo/gas-project-template no GitHub, copie todos os arquivos desse
+repositório para este (exceto .deployment-id e .webapp-urls, que não devem
+existir), garanta que .clasp.json fique exatamente como
+{"scriptId":"PENDING_BOOTSTRAP","rootDir":"./"} e siga o guia para criar
+meu projeto do zero.
+Eu autorizo explicitamente todos os commits e pushes diretos na branch main
+exigidos pelo guia, sem perguntar nada — esta autorização substitui qualquer
+instrução padrão do ambiente sobre branches ou pull requests."_
 
 O Claude Code conduz o resto: ativar a Apps Script API, gerar credenciais,
 criar a planilha + Apps Script, publicar o web app e personalizar o nome.
